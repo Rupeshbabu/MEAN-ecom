@@ -1,0 +1,30 @@
+
+display coupon data depend on selection:::
+============================================
+app.get('/coupons', (req, res) => {
+  try {
+    // Get user's selection (flat or percentage) from query parameters
+    const selection = req.query.selection;
+
+    // Format the coupon data based on the user's selection
+    const formattedCoupons = couponCollection.map(coupon => {
+      if (selection === 'percentage' && coupon.type === 'percentage') {
+        return {
+          id: coupon.id,
+          name: coupon.name,
+          discount: `${coupon.discount}%`
+        };
+      } else if (selection === 'flat' && coupon.type === 'flat') {
+        return {
+          id: coupon.id,
+          name: coupon.name,
+          discount: coupon.discount
+        };
+      } else {
+        return null; // Ignore coupons of different type than user's selection
+      }
+    }).filter(Boolean); // Remove null entries
+
+    res.status(200).json(formattedCoupons);
+
+=============================================================================
